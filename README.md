@@ -1,5 +1,6 @@
 # Datadog MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@GeLi2001/datadog-mcp-server)](https://smithery.ai/server/@GeLi2001/datadog-mcp-server)
 A Model Context Protocol (MCP) server for interacting with the Datadog API.
 
 <a href="https://glama.ai/mcp/servers/@GeLi2001/datadog-mcp-server">
@@ -25,6 +26,14 @@ A Model Context Protocol (MCP) server for interacting with the Datadog API.
    - Application key - Found in Organization Settings > Application Keys
 
 ## Installation
+
+### Installing via Smithery
+
+To install Datadog MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@GeLi2001/datadog-mcp-server):
+
+```bash
+npx -y @smithery/cli install @GeLi2001/datadog-mcp-server --client claude
+```
 
 ### Via npm (recommended)
 
