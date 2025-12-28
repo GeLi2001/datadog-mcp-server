@@ -25,6 +25,36 @@ A Model Context Protocol (MCP) server for interacting with the Datadog API.
    - API key - Found in Organization Settings > API Keys
    - Application key - Found in Organization Settings > Application Keys
 
+## Application Key Scopes
+
+For improved security, you can scope your Application Key to grant only the minimum permissions required by this MCP server. By default, Application Keys inherit all permissions from the user who created them, but [scoped Application Keys](https://docs.datadoghq.com/account_management/api-app-keys/#scopes) allow you to follow the principle of least privilege.
+
+### Required Scopes
+
+The following scopes are required for the corresponding features:
+
+| Tool(s) | Required Scope | Description |
+|---------|----------------|-------------|
+| `get-monitors`, `get-monitor` | `monitors_read` | Read access to monitor configurations and states |
+| `get-dashboards`, `get-dashboard` | `dashboards_read` | Read access to dashboard definitions |
+| `get-metrics`, `get-metric-metadata` | `metrics_read` | Read access to metrics list and metadata |
+| `get-events` | `events_read` | Read access to events from the event stream |
+| `search-logs`, `aggregate-logs` | `logs_read_data` | Read access to log data for search and aggregation |
+| `get-incidents` | `incident_read` | Read access to incident management data |
+
+### Creating a Scoped Application Key
+
+1. Go to **Organization Settings** > **Application Keys**
+2. Click **New Key**
+3. Enter a name (e.g., "MCP Server - Read Only")
+4. Under **Scopes**, select only the permissions you need:
+   - For full functionality: `monitors_read`, `dashboards_read`, `metrics_read`, `events_read`, `logs_read_data`, `incident_read`
+   - For logs only: `logs_read_data`
+   - For monitoring only: `monitors_read`, `dashboards_read`, `metrics_read`
+5. Click **Create Key**
+
+> **Note**: If you don't specify any scopes when creating an Application Key, it will have full access with all permissions of the creating user. For production use, we recommend always specifying explicit scopes.
+
 ## Installation
 
 ### Via npm (recommended)
