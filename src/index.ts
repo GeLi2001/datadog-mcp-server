@@ -29,11 +29,14 @@ import { getMetricMetadata } from "./tools/getMetricMetadata.js";
 import { getMetrics } from "./tools/getMetrics.js";
 import { getMonitor } from "./tools/getMonitor.js";
 import { getMonitors } from "./tools/getMonitors.js";
+import { getSecurityFinding } from "./tools/getSecurityFinding.js";
 import { getServices } from "./tools/getServices.js";
 import { getSLO } from "./tools/getSLO.js";
 import { getSLOs } from "./tools/getSLOs.js";
 import { getTrace } from "./tools/getTrace.js";
+import { listPostureFindings } from "./tools/listPostureFindings.js";
 import { searchLogs } from "./tools/searchLogs.js";
+import { searchSecurityFindings } from "./tools/searchSecurityFindings.js";
 import { searchSpans } from "./tools/searchSpans.js";
 
 // Helper function to mask sensitive credentials for logging
@@ -141,6 +144,12 @@ getServices.initialize();
 logger.info({ tool: "get-services" }, "Tool initialized");
 getTrace.initialize();
 logger.info({ tool: "get-trace" }, "Tool initialized");
+searchSecurityFindings.initialize();
+logger.info({ tool: "search-security-findings" }, "Tool initialized");
+getSecurityFinding.initialize();
+logger.info({ tool: "get-security-finding" }, "Tool initialized");
+listPostureFindings.initialize();
+logger.info({ tool: "list-posture-findings" }, "Tool initialized");
 
 // Set up MCP server
 const server = new McpServer({
@@ -628,6 +637,101 @@ server.tool(
     const resultCount =
       result && "data" in result && Array.isArray(result.data) ? result.data.length : 0;
     logger.debug({ tool: "get-trace", resultCount, durationMs }, "Tool execution completed");
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }],
+    };
+  },
+);
+
+server.tool(
+  "search-security-findings",
+  "List or search Datadog security findings (Cloud Security Management). Use to retrieve findings with a query and optional pagination cursor. Requires the security_monitoring_findings_read scope.",
+  {
+    filter: z
+      .object({
+        query: z.string().optional(),
+      })
+      .optional(),
+    page: z
+      .object({
+        limit: z.number().optional(),
+        cursor: z.string().optional(),
+      })
+      .optional(),
+    limit: z.number().optional(),
+  },
+  async (args) => {
+    const startTime = Date.now();
+    logger.info({ tool: "search-security-findings", args }, "Tool call started");
+    const result = await searchSecurityFindings.execute(args);
+    const durationMs = Date.now() - startTime;
+    const resultCount = Array.isArray(result?.data) ? result.data.length : 0;
+    logger.debug(
+      { tool: "search-security-findings", resultCount, durationMs },
+      "Tool execution completed",
+    );
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }],
+    };
+  },
+);
+
+server.tool(
+  "get-security-finding",
+  "Get a legacy CSPM/CIEM finding by ID (posture_management). Note: this endpoint uses the legacy data model. Requires the security_monitoring_findings_read scope.",
+  {
+    findingId: z.string(),
+  },
+  async (args) => {
+    const startTime = Date.now();
+    logger.info({ tool: "get-security-finding", args }, "Tool call started");
+    const result = await getSecurityFinding.execute(args);
+    const durationMs = Date.now() - startTime;
+    logger.debug({ tool: "get-security-finding", durationMs }, "Tool execution completed");
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }],
+    };
+  },
+);
+
+server.tool(
+  "list-posture-findings",
+  "List legacy CSPM/CIEM posture management findings (misconfigurations and identity risks). Useful for compliance use-cases. Requires the security_monitoring_findings_read scope.",
+  {
+    filter: z
+      .object({
+        tags: z.array(z.string()).optional(),
+        evaluation: z.enum(["pass", "fail"]).optional(),
+        status: z.enum(["open", "resolved", "dismissed"]).optional(),
+        ruleId: z.string().optional(),
+        ruleName: z.string().optional(),
+        resourceType: z.string().optional(),
+        resourceId: z.string().optional(),
+        muted: z.boolean().optional(),
+        evaluationChangedAt: z.string().optional(),
+        discoveryTimestamp: z.string().optional(),
+      })
+      .optional(),
+    page: z
+      .object({
+        limit: z.number().optional(),
+        cursor: z.string().optional(),
+      })
+      .optional(),
+    snapshotTimestamp: z.number().optional(),
+    detailedFindings: z.boolean().optional(),
+    limit: z.number().optional(),
+  },
+  async (args) => {
+    const startTime = Date.now();
+    logger.info({ tool: "list-posture-findings", args }, "Tool call started");
+    const result = await listPostureFindings.execute(args);
+    const durationMs = Date.now() - startTime;
+    const resultCount = Array.isArray(result?.data) ? result.data.length : 0;
+    logger.debug(
+      { tool: "list-posture-findings", resultCount, durationMs },
+      "Tool execution completed",
+    );
     return {
       content: [{ type: "text", text: JSON.stringify(result) }],
     };

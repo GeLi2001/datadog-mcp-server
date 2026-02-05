@@ -167,6 +167,9 @@ args = ["github:dreamiurg/datadog-mcp-server", "--apiKey", "YOUR_API_KEY", "--ap
 | `aggregate-spans` | Compute APM statistics | *"Show p99 latency by service"* |
 | `get-services` | List APM-instrumented services | *"What services are being traced?"* |
 | `get-trace` | Get full trace by ID | *"Show all spans for trace abc123"* |
+| `search-security-findings` | List/search Cloud Security findings | *"Find high-severity cloud security findings"* |
+| `get-security-finding` | Get legacy CSPM/CIEM finding by ID | *"Get finding abc123"* |
+| `list-posture-findings` | List legacy CSPM/CIEM posture findings | *"List compliance findings that failed"* |
 
 ---
 
@@ -227,6 +230,8 @@ For least-privilege security, create an Application Key with only required scope
 | `get-slos`, `get-slo` | `slos_read` |
 | `search-spans`, `aggregate-spans`, `get-trace` | `apm_read` |
 | `get-services` | `apm_service_catalog_read` |
+| `search-security-findings` | `security_monitoring_findings_read` (or `appsec_vm_read`) |
+| `get-security-finding`, `list-posture-findings` | `security_monitoring_findings_read` |
 
 **Create a scoped key:** Organization Settings → Application Keys → New Key → Select scopes
 

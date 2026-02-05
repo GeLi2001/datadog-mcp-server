@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/dreamiurg/datadog-mcp-server/compare/v1.1.1...v1.2.0) (2026-02-05)
+
+
+### Features
+
+* add security findings tools for CSM posture and unified findings
+
 ## [1.1.1](https://github.com/dreamiurg/datadog-mcp-server/compare/v1.1.0...v1.1.1) (2025-12-29)
 
 
