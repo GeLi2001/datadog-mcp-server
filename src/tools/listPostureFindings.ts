@@ -30,6 +30,51 @@ interface ListPostureFindingsParams {
   limit?: number;
 }
 
+const FILTER_PARAM_MAP: Record<string, string> = {
+  evaluation: "filter[evaluation]",
+  status: "filter[status]",
+  ruleId: "filter[rule_id]",
+  ruleName: "filter[rule_name]",
+  resourceType: "filter[resource_type]",
+  resourceId: "filter[@resource_id]",
+  muted: "filter[muted]",
+  evaluationChangedAt: "filter[evaluation_changed_at]",
+  discoveryTimestamp: "filter[discovery_timestamp]",
+};
+
+function buildQueryParams(params: ListPostureFindingsParams): URLSearchParams {
+  const qp = new URLSearchParams();
+  const { filter, page, snapshotTimestamp, detailedFindings } = params;
+
+  if (filter?.tags?.length) {
+    for (const tag of filter.tags) {
+      qp.append("filter[tags]", tag);
+    }
+  }
+
+  for (const [key, paramName] of Object.entries(FILTER_PARAM_MAP)) {
+    const value = filter?.[key as keyof typeof filter];
+    if (value !== undefined) {
+      qp.append(paramName, String(value));
+    }
+  }
+
+  if (page?.limit !== undefined) {
+    qp.append("page[limit]", String(page.limit));
+  }
+  if (page?.cursor) {
+    qp.append("page[cursor]", page.cursor);
+  }
+  if (snapshotTimestamp !== undefined) {
+    qp.append("snapshot_timestamp", String(snapshotTimestamp));
+  }
+  if (detailedFindings !== undefined) {
+    qp.append("detailed_findings", String(detailedFindings));
+  }
+
+  return qp;
+}
+
 // We still need to call initialize() for API compatibility,
 // but the configuration is created per-request for the HTTP client
 let initialized = false;
@@ -50,60 +95,16 @@ export const listPostureFindings = {
     }
 
     try {
-      const { filter, page, snapshotTimestamp, detailedFindings, limit } = params;
-
       log.debug(
-        { evaluation: filter?.evaluation, status: filter?.status, cursor: page?.cursor },
+        {
+          evaluation: params.filter?.evaluation,
+          status: params.filter?.status,
+          cursor: params.page?.cursor,
+        },
         "execute() called",
       );
 
-      const queryParams = new URLSearchParams();
-
-      if (filter?.tags?.length) {
-        for (const tag of filter.tags) {
-          queryParams.append("filter[tags]", tag);
-        }
-      }
-      if (filter?.evaluation) {
-        queryParams.append("filter[evaluation]", filter.evaluation);
-      }
-      if (filter?.status) {
-        queryParams.append("filter[status]", filter.status);
-      }
-      if (filter?.ruleId) {
-        queryParams.append("filter[rule_id]", filter.ruleId);
-      }
-      if (filter?.ruleName) {
-        queryParams.append("filter[rule_name]", filter.ruleName);
-      }
-      if (filter?.resourceType) {
-        queryParams.append("filter[resource_type]", filter.resourceType);
-      }
-      if (filter?.resourceId) {
-        queryParams.append("filter[@resource_id]", filter.resourceId);
-      }
-      if (filter?.muted !== undefined) {
-        queryParams.append("filter[muted]", String(filter.muted));
-      }
-      if (filter?.evaluationChangedAt) {
-        queryParams.append("filter[evaluation_changed_at]", filter.evaluationChangedAt);
-      }
-      if (filter?.discoveryTimestamp) {
-        queryParams.append("filter[discovery_timestamp]", filter.discoveryTimestamp);
-      }
-      if (page?.limit !== undefined) {
-        queryParams.append("page[limit]", String(page.limit));
-      }
-      if (page?.cursor) {
-        queryParams.append("page[cursor]", page.cursor);
-      }
-      if (snapshotTimestamp !== undefined) {
-        queryParams.append("snapshot_timestamp", String(snapshotTimestamp));
-      }
-      if (detailedFindings !== undefined) {
-        queryParams.append("detailed_findings", String(detailedFindings));
-      }
-
+      const queryParams = buildQueryParams(params);
       const queryString = queryParams.toString();
       const path = queryString
         ? `/api/v2/posture_management/findings?${queryString}`
@@ -115,8 +116,8 @@ export const listPostureFindings = {
         method: "GET",
       });
 
-      if (limit && data.data && data.data.length > limit) {
-        data.data = data.data.slice(0, limit);
+      if (params.limit && data.data && data.data.length > params.limit) {
+        data.data = data.data.slice(0, params.limit);
       }
 
       log.info({ resultCount: data.data?.length || 0 }, "list-posture-findings completed");

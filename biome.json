@@ -22,7 +22,11 @@
         "noExplicitAny": "error"
       },
       "complexity": {
-        "noForEach": "off"
+        "noForEach": "off",
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 15 }
+        }
       }
     }
   },

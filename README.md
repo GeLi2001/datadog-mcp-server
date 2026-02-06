@@ -297,12 +297,6 @@ npx @modelcontextprotocol/inspector node dist/index.js \
 
 ---
 
-## Contributing
-
-Contributions are welcome! Please read our [Security Policy](SECURITY.md) for reporting vulnerabilities.
-
----
-
 ## License
 
 [MIT](LICENSE) - Use freely in personal and commercial projects.

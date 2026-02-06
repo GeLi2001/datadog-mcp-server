@@ -5,7 +5,7 @@
  *
  * This script handles different installation scenarios:
  * - CI environment: Skips (explicit build step in workflow)
- * - Local development: Builds TypeScript and sets up Husky (shows errors)
+ * - Local development: Builds TypeScript and sets up pre-commit hooks (shows errors)
  * - Install from GitHub: Builds TypeScript (devDeps available)
  * - Install from npm: Skips build silently (devDeps not available)
  */
@@ -39,11 +39,13 @@ if (isTypeScriptAvailable()) {
   }
 }
 
-// Run Husky only if .git directory exists (local development)
+// Install pre-commit hooks only if .git directory exists (local development)
 if (fs.existsSync(".git")) {
   try {
-    execSync("husky", { stdio: "inherit" });
+    execSync("pre-commit install && pre-commit install --hook-type pre-push", {
+      stdio: "inherit",
+    });
   } catch {
-    // Husky might not be available or might fail, that's okay
+    // pre-commit might not be available, that's okay
   }
 }

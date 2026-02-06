@@ -1,1 +1,0 @@
-npm run typecheck && npx lint-staged

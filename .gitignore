@@ -47,4 +47,4 @@ logs/
 # Misc
 .tmp/
 temp/
-coverage/ 
+coverage/

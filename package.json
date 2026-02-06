@@ -20,6 +20,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "complexity": "lizard -l javascript -C 15 -L 60 -a 5 -w .",
+    "ci": "npm run check && npm run test:coverage && npm run complexity && npm run build",
     "prepublishOnly": "npm run audit && npm run check && npm run build",
     "publish:dry-run": "npm pack --dry-run",
     "prepare": "node scripts/prepare.js"
@@ -48,15 +50,8 @@
     "@types/node": "^25.0.3",
     "@types/pino": "^7.0.4",
     "@vitest/coverage-v8": "^4.0.16",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
-  },
-  "lint-staged": {
-    "*.{ts,js,json}": [
-      "biome check --write --no-errors-on-unmatched"
-    ]
   },
   "engines": {
     "node": ">=20"

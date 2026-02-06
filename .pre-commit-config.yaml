@@ -1,0 +1,44 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: no-commit-to-branch
+        args: [--branch, main]
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: detect-private-key
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks
+
+  # Pre-commit stage: format and lint
+  - repo: local
+    hooks:
+      - id: biome-check
+        name: biome check
+        entry: npx biome check --write .
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # Pre-push stage: typecheck and tests
+  - repo: local
+    hooks:
+      - id: typecheck
+        name: typescript typecheck
+        entry: npx tsc --noEmit
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: test
+        name: tests
+        entry: npx vitest run
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
