@@ -5,6 +5,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import dotenv from "dotenv";
 import minimist from "minimist";
 import { z } from "zod";
+import packageJson from "../package.json";
 
 // Import tools
 import { aggregateLogs } from "./tools/aggregateLogs.js";
@@ -79,7 +80,7 @@ aggregateLogs.initialize();
 // Set up MCP server
 const server = new McpServer({
   name: "datadog",
-  version: "1.0.0",
+  version: packageJson.version,
   description:
     "MCP Server for Datadog API, enabling interaction with Datadog resources"
 });
